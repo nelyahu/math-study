@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Study for Kids</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ========== CONFIGURATION SCREEN ========== -->
+    <div id="config-screen" class="screen active">
+        <h1>🧮 Math Study</h1>
+        <p class="subtitle">Pick your topics and let's practice!</p>
+
+        <div class="topic-grid">
+            <!-- Addition -->
+            <div class="topic-card" data-topic="addition">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-addition" checked>
+                    <span class="topic-label">➕ Addition</span>
+                </label>
+                <select id="range-addition" class="range-select">
+                    <option value="10">0 – 10</option>
+                    <option value="20">0 – 20</option>
+                    <option value="100">0 – 100</option>
+                </select>
+            </div>
+
+            <!-- Subtraction -->
+            <div class="topic-card" data-topic="subtraction">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-subtraction" checked>
+                    <span class="topic-label">➖ Subtraction</span>
+                </label>
+                <select id="range-subtraction" class="range-select">
+                    <option value="10">0 – 10</option>
+                    <option value="20">0 – 20</option>
+                    <option value="100">0 – 100</option>
+                </select>
+            </div>
+
+            <!-- Multiplication -->
+            <div class="topic-card" data-topic="multiplication">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-multiplication" checked>
+                    <span class="topic-label">✖️ Multiplication</span>
+                </label>
+                <select id="range-multiplication" class="range-select">
+                    <option value="10">0 – 10</option>
+                    <option value="20">0 – 20</option>
+                    <option value="100">0 – 100</option>
+                </select>
+            </div>
+
+            <!-- Division -->
+            <div class="topic-card" data-topic="division">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-division" checked>
+                    <span class="topic-label">➗ Division</span>
+                </label>
+                <select id="range-division" class="range-select">
+                    <option value="10">0 – 10</option>
+                    <option value="20">0 – 20</option>
+                    <option value="100">0 – 100</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btn-start" class="btn-primary">Start! 🚀</button>
+        <p id="config-error" class="error-msg hidden">Please select at least one topic.</p>
+    </div>
+
+    <!-- ========== QUESTION SCREEN ========== -->
+    <div id="question-screen" class="screen">
+        <div class="progress-bar-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="progress-text" class="progress-text">Question 1 / 10</p>
+
+        <div id="question-box" class="question-box">
+            <span id="question-text">7 + 5 = ?</span>
+        </div>
+
+        <div id="feedback-emoji" class="feedback-emoji hidden"></div>
+
+        <div id="options-container" class="options-container">
+            <button class="btn-option" data-index="0">12</button>
+            <button class="btn-option" data-index="1">10</button>
+            <button class="btn-option" data-index="2">14</button>
+            <button class="btn-option" data-index="3">11</button>
+        </div>
+    </div>
+
+    <!-- ========== SUMMARY SCREEN ========== -->
+    <div id="summary-screen" class="screen">
+        <h1>🎉 Stage Complete!</h1>
+        <p id="summary-score" class="summary-score">8 / 10 on first try!</p>
+        <div class="summary-emoji">🎉</div>
+        <button id="btn-play-again" class="btn-primary">Play Again 🔄</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
