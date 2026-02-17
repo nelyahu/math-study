@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Study for Kids</title>
+    <title>Kids Study</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -32,8 +32,28 @@
         </button>
     </div>
 
-    <!-- ========== CONFIGURATION SCREEN ========== -->
-    <div id="config-screen" class="screen active">
+    <!-- ========== MAIN MENU SCREEN ========== -->
+    <div id="menu-screen" class="screen active">
+        <h1 data-i18n="mainTitle">🎓 Kids Study</h1>
+        <p class="subtitle" data-i18n="mainSubtitle">Choose a game!</p>
+
+        <div class="game-grid">
+            <button class="game-card" id="btn-game-math">
+                <span class="game-card-icon">🧮</span>
+                <span class="game-card-title" data-i18n="mathGame">Math Study</span>
+                <span class="game-card-desc" data-i18n="mathGameDesc">Practice addition, subtraction, multiplication &amp; division</span>
+            </button>
+            <button class="game-card" id="btn-game-flags">
+                <span class="game-card-icon">🏳️</span>
+                <span class="game-card-title" data-i18n="flagsGame">Flag Quiz</span>
+                <span class="game-card-desc" data-i18n="flagsGameDesc">Guess the country by its flag</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== MATH CONFIGURATION SCREEN ========== -->
+    <div id="config-screen" class="screen">
+        <button class="btn-back" id="btn-back-math-config" data-i18n="backToMenu">← Back to Menu</button>
         <h1 data-i18n="title">🧮 Math Study</h1>
         <p class="subtitle" data-i18n="subtitle">Pick your topics and let's practice!</p>
 
@@ -95,7 +115,7 @@
         <p id="config-error" class="error-msg hidden" data-i18n="configError">Please select at least one topic.</p>
     </div>
 
-    <!-- ========== QUESTION SCREEN ========== -->
+    <!-- ========== MATH QUESTION SCREEN ========== -->
     <div id="question-screen" class="screen">
         <div class="progress-bar-container">
             <div id="progress-bar" class="progress-bar"></div>
@@ -116,14 +136,89 @@
         </div>
     </div>
 
-    <!-- ========== SUMMARY SCREEN ========== -->
+    <!-- ========== MATH SUMMARY SCREEN ========== -->
     <div id="summary-screen" class="screen">
         <h1 data-i18n="stageComplete">🎉 Stage Complete!</h1>
         <p id="summary-score" class="summary-score" data-i18n="summaryScore">8 / 10 on first try!</p>
         <div class="summary-emoji">🎉</div>
-        <button id="btn-play-again" class="btn-primary" data-i18n="playAgain">Play Again 🔄</button>
+        <div class="summary-buttons">
+            <button id="btn-play-again" class="btn-primary" data-i18n="playAgain">Play Again 🔄</button>
+            <button id="btn-menu-from-math" class="btn-secondary" data-i18n="backToMenu">← Back to Menu</button>
+        </div>
+    </div>
+
+    <!-- ========== FLAGS CONFIGURATION SCREEN ========== -->
+    <div id="flags-config-screen" class="screen">
+        <button class="btn-back" id="btn-back-flags-config" data-i18n="backToMenu">← Back to Menu</button>
+        <h1 data-i18n="flagsGame">🏳️ Flag Quiz</h1>
+        <p class="subtitle" data-i18n="flagsGameSubtitle">Pick regions and start guessing!</p>
+
+        <div class="topic-grid">
+            <div class="topic-card">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-region-europe" checked>
+                    <span class="topic-label" data-i18n="flagsRegionEurope">🇪🇺 Europe</span>
+                </label>
+            </div>
+            <div class="topic-card">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-region-asia" checked>
+                    <span class="topic-label" data-i18n="flagsRegionAsia">🌏 Asia</span>
+                </label>
+            </div>
+            <div class="topic-card">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-region-americas" checked>
+                    <span class="topic-label" data-i18n="flagsRegionAmericas">🌎 Americas</span>
+                </label>
+            </div>
+            <div class="topic-card">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-region-africa" checked>
+                    <span class="topic-label" data-i18n="flagsRegionAfrica">🌍 Africa</span>
+                </label>
+            </div>
+            <div class="topic-card">
+                <label class="topic-check">
+                    <input type="checkbox" id="chk-region-oceania" checked>
+                    <span class="topic-label" data-i18n="flagsRegionOceania">🏝️ Oceania</span>
+                </label>
+            </div>
+        </div>
+
+        <button id="btn-start-flags" class="btn-primary" data-i18n="start">Start! 🚀</button>
+        <p id="flags-config-error" class="error-msg hidden" data-i18n="flagsConfigError">Please select at least one region.</p>
+    </div>
+
+    <!-- ========== FLAGS QUESTION SCREEN ========== -->
+    <div id="flags-question-screen" class="screen">
+        <div class="progress-bar-container">
+            <div id="flags-progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="flags-progress-text" class="progress-text" data-i18n="progress">Question 1 / 10</p>
+
+        <div class="question-box flag-display-box">
+            <span id="flag-display" class="flag-display"></span>
+        </div>
+
+        <div id="flags-feedback-emoji" class="feedback-emoji hidden"></div>
+
+        <div id="flags-options-container" class="options-container">
+        </div>
+    </div>
+
+    <!-- ========== FLAGS SUMMARY SCREEN ========== -->
+    <div id="flags-summary-screen" class="screen">
+        <h1 data-i18n="stageComplete">🎉 Stage Complete!</h1>
+        <p id="flags-summary-score" class="summary-score" data-i18n="summaryScore">8 / 10 on first try!</p>
+        <div class="summary-emoji">🎉</div>
+        <div class="summary-buttons">
+            <button id="btn-flags-play-again" class="btn-primary" data-i18n="playAgain">Play Again 🔄</button>
+            <button id="btn-menu-from-flags" class="btn-secondary" data-i18n="backToMenu">← Back to Menu</button>
+        </div>
     </div>
 
     <script src="app.js"></script>
+    <script src="flags.js"></script>
 </body>
 </html>

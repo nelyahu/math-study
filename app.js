@@ -1,5 +1,5 @@
 /* ============================================================
-   Math Study App — Application Logic
+   Kids Study App — Application Logic
    ============================================================ */
 
 (function () {
@@ -7,14 +7,24 @@
 
     // ─── Constants ───────────────────────────────────────────
     const QUESTIONS_PER_STAGE = 10;
-    const HISTORY_CAP = 200;
-    const HISTORY_KEY = 'mathStudy_questionHistory';
+    const MATH_HISTORY_CAP = 200;
+    const MATH_HISTORY_KEY = 'mathStudy_questionHistory';
     const LANG_KEY = 'mathStudy_lang';
     const FEEDBACK_DELAY_MS = 1500;
 
     // ─── Translations ────────────────────────────────────────
     const translations = {
         en: {
+            // Main menu
+            mainTitle: '🎓 Kids Study',
+            mainSubtitle: 'Choose a game!',
+            mathGame: '🧮 Math Study',
+            mathGameDesc: 'Practice addition, subtraction, multiplication & division',
+            flagsGame: '🏳️ Flag Quiz',
+            flagsGameDesc: 'Guess the country by its flag',
+            backToMenu: '← Back to Menu',
+
+            // Math config
             title: '🧮 Math Study',
             subtitle: "Pick your topics and let's practice!",
             addition: '➕ Addition',
@@ -23,12 +33,33 @@
             division: '➗ Division',
             start: 'Start! 🚀',
             configError: 'Please select at least one topic.',
+
+            // Flags config
+            flagsGameSubtitle: 'Pick regions and start guessing!',
+            flagsRegionEurope: '🇪🇺 Europe',
+            flagsRegionAsia: '🌏 Asia',
+            flagsRegionAmericas: '🌎 Americas',
+            flagsRegionAfrica: '🌍 Africa',
+            flagsRegionOceania: '🏝️ Oceania',
+            flagsConfigError: 'Please select at least one region.',
+
+            // Shared game
             progress: 'Question {n} / {total}',
             stageComplete: '🎉 Stage Complete!',
             summaryScore: '{score} / {total} on first try!',
             playAgain: 'Play Again 🔄',
         },
         he: {
+            // Main menu
+            mainTitle: '🎓 לימוד לילדים',
+            mainSubtitle: '!בחרו משחק',
+            mathGame: '🧮 תרגול חשבון',
+            mathGameDesc: 'תרגול חיבור, חיסור, כפל וחילוק',
+            flagsGame: '🏳️ חידון דגלים',
+            flagsGameDesc: 'זהו את המדינה לפי הדגל',
+            backToMenu: '→ חזרה לתפריט',
+
+            // Math config
             title: '🧮 תרגול חשבון',
             subtitle: 'בחרו נושאים ובואו נתרגל!',
             addition: '➕ חיבור',
@@ -37,6 +68,17 @@
             division: '➗ חילוק',
             start: '🚀 !התחילו',
             configError: 'יש לבחור לפחות נושא אחד.',
+
+            // Flags config
+            flagsGameSubtitle: 'בחרו אזורים והתחילו לנחש!',
+            flagsRegionEurope: '🇪🇺 אירופה',
+            flagsRegionAsia: '🌏 אסיה',
+            flagsRegionAmericas: '🌎 אמריקה',
+            flagsRegionAfrica: '🌍 אפריקה',
+            flagsRegionOceania: '🏝️ אוקיאניה',
+            flagsConfigError: 'יש לבחור לפחות אזור אחד.',
+
+            // Shared game
             progress: 'שאלה {n} מתוך {total}',
             stageComplete: '🎉 !השלב הושלם',
             summaryScore: '{score} מתוך {total} בניסיון הראשון!',
@@ -48,9 +90,18 @@
 
     // ─── DOM References ──────────────────────────────────────
     const screens = {
-        config:   document.getElementById('config-screen'),
-        question: document.getElementById('question-screen'),
-        summary:  document.getElementById('summary-screen'),
+        menu:          document.getElementById('menu-screen'),
+        config:        document.getElementById('config-screen'),
+        question:      document.getElementById('question-screen'),
+        summary:       document.getElementById('summary-screen'),
+        flagsConfig:   document.getElementById('flags-config-screen'),
+        flagsQuestion: document.getElementById('flags-question-screen'),
+        flagsSummary:  document.getElementById('flags-summary-screen'),
+    };
+
+    const menuUI = {
+        btnMath:  document.getElementById('btn-game-math'),
+        btnFlags: document.getElementById('btn-game-flags'),
     };
 
     const configUI = {
@@ -67,6 +118,7 @@
             division:       document.getElementById('range-division'),
         },
         btnStart:   document.getElementById('btn-start'),
+        btnBack:    document.getElementById('btn-back-math-config'),
         errorMsg:   document.getElementById('config-error'),
     };
 
@@ -79,13 +131,26 @@
     };
 
     const summaryUI = {
-        score:       document.getElementById('summary-score'),
+        score:        document.getElementById('summary-score'),
         btnPlayAgain: document.getElementById('btn-play-again'),
+        btnMenu:      document.getElementById('btn-menu-from-math'),
     };
 
     const langUI = {
         btnEn: document.getElementById('btn-lang-en'),
         btnHe: document.getElementById('btn-lang-he'),
+    };
+
+    // ─── Expose shared utilities for flags.js ────────────────
+    window.KidsStudy = {
+        get currentLang() { return currentLang; },
+        QUESTIONS_PER_STAGE,
+        FEEDBACK_DELAY_MS,
+        t: null,           // set below
+        showScreen: null,  // set below
+        screens,
+        randInt: null,
+        shuffle: null,
     };
 
     // ─── i18n Helpers ────────────────────────────────────────
@@ -98,6 +163,7 @@
         }
         return text;
     }
+    window.KidsStudy.t = t;
 
     function applyLanguage() {
         // Set direction
@@ -121,15 +187,20 @@
             el.textContent = t(key);
         });
 
-        // Update dynamic text if currently on question screen
-        if (screens.question.classList.contains('active') && questions.length > 0) {
-            const num = currentIndex + 1;
+        // Update dynamic text if currently on math question screen
+        if (screens.question.classList.contains('active') && mathQuestions.length > 0) {
+            const num = mathCurrentIndex + 1;
             questionUI.progressText.textContent = t('progress', { n: num, total: QUESTIONS_PER_STAGE });
         }
 
-        // Update summary score if currently on summary screen
+        // Update math summary score if currently on summary screen
         if (screens.summary.classList.contains('active')) {
-            summaryUI.score.textContent = t('summaryScore', { score: firstAttemptCorrect, total: QUESTIONS_PER_STAGE });
+            summaryUI.score.textContent = t('summaryScore', { score: mathFirstAttemptCorrect, total: QUESTIONS_PER_STAGE });
+        }
+
+        // Notify flags module to refresh if active
+        if (typeof window.FlagsGame !== 'undefined' && window.FlagsGame.onLanguageChange) {
+            window.FlagsGame.onLanguageChange();
         }
 
         // Persist preference
@@ -141,39 +212,41 @@
         applyLanguage();
     }
 
-    // ─── State ───────────────────────────────────────────────
-    let questions = [];          // array of 10 question objects for current stage
-    let currentIndex = 0;        // which question we're on (0-based)
-    let firstAttemptCorrect = 0; // count of questions answered correctly on first try
-    let isFirstAttempt = true;   // whether current question is still on first attempt
+    // ─── Screen Management ───────────────────────────────────
+    function showScreen(name) {
+        Object.values(screens).forEach(s => s.classList.remove('active'));
+        screens[name].classList.add('active');
+    }
+    window.KidsStudy.showScreen = showScreen;
 
-    // ─── History (localStorage) ──────────────────────────────
-    function loadHistory() {
+    // ─── Math State ──────────────────────────────────────────
+    let mathQuestions = [];
+    let mathCurrentIndex = 0;
+    let mathFirstAttemptCorrect = 0;
+    let mathIsFirstAttempt = true;
+
+    // ─── Math History (localStorage) ─────────────────────────
+    function loadMathHistory() {
         try {
-            const raw = localStorage.getItem(HISTORY_KEY);
+            const raw = localStorage.getItem(MATH_HISTORY_KEY);
             return raw ? JSON.parse(raw) : [];
         } catch {
             return [];
         }
     }
 
-    function saveHistory(history) {
-        // Keep only the last HISTORY_CAP entries
-        if (history.length > HISTORY_CAP) {
-            history = history.slice(history.length - HISTORY_CAP);
+    function saveMathHistory(history) {
+        if (history.length > MATH_HISTORY_CAP) {
+            history = history.slice(history.length - MATH_HISTORY_CAP);
         }
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-    }
-
-    function questionKey(q) {
-        return `${q.topic}|${q.a}|${q.op}|${q.b}`;
+        localStorage.setItem(MATH_HISTORY_KEY, JSON.stringify(history));
     }
 
     // ─── Random Helpers ──────────────────────────────────────
     function randInt(min, max) {
-        // inclusive of both min and max
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+    window.KidsStudy.randInt = randInt;
 
     function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -182,8 +255,9 @@
         }
         return arr;
     }
+    window.KidsStudy.shuffle = shuffle;
 
-    // ─── Question Generation ─────────────────────────────────
+    // ─── Math Question Generation ────────────────────────────
     function generateQuestion(topic, maxNum, historySet) {
         const MAX_TRIES = 500;
         for (let t = 0; t < MAX_TRIES; t++) {
@@ -201,7 +275,7 @@
                 case 'subtraction':
                     a = randInt(0, maxNum);
                     b = randInt(0, maxNum);
-                    if (a < b) [a, b] = [b, a]; // ensure non-negative result
+                    if (a < b) [a, b] = [b, a];
                     answer = a - b;
                     op = '−';
                     display = `${a} − ${b} = ?`;
@@ -216,8 +290,7 @@
                     break;
 
                 case 'division':
-                    // Generate b (divisor) first, then answer, then compute a = b * answer
-                    b = randInt(1, maxNum); // divisor at least 1
+                    b = randInt(1, maxNum);
                     answer = randInt(0, maxNum);
                     a = b * answer;
                     op = '÷';
@@ -229,11 +302,10 @@
             }
 
             const key = `${topic}|${a}|${op}|${b}`;
-            if (historySet.has(key)) continue; // already used recently
+            if (historySet.has(key)) continue;
 
             return { topic, a, b, op, answer, display, key };
         }
-        // If exhausted, return without history guard (pool too small)
         return generateQuestionNoHistory(topic, maxNum);
     }
 
@@ -273,7 +345,6 @@
             }
         }
 
-        // Fallback: fill remaining slots with sequential values
         let fallback = 1;
         while (distractors.size < 3) {
             const val = correctAnswer + fallback;
@@ -286,16 +357,14 @@
         return [...distractors];
     }
 
-    function buildStageQuestions(selectedTopics) {
-        // selectedTopics: [{topic: 'addition', maxNum: 10}, ...]
-        const history = loadHistory();
+    function buildMathStageQuestions(selectedTopics) {
+        const history = loadMathHistory();
         const historySet = new Set(history);
 
         const generatedQuestions = [];
         const newKeys = [];
 
         for (let i = 0; i < QUESTIONS_PER_STAGE; i++) {
-            // Distribute topics roughly evenly
             const topicInfo = selectedTopics[i % selectedTopics.length];
             const q = generateQuestion(topicInfo.topic, topicInfo.maxNum, historySet);
             const distractors = generateDistractors(q.answer);
@@ -311,22 +380,22 @@
             newKeys.push(q.key);
         }
 
-        // Shuffle question order so topics aren't in predictable sequence
         shuffle(generatedQuestions);
-
-        // Save new keys to persistent history
-        saveHistory([...history, ...newKeys]);
+        saveMathHistory([...history, ...newKeys]);
 
         return generatedQuestions;
     }
 
-    // ─── Screen Management ───────────────────────────────────
-    function showScreen(name) {
-        Object.values(screens).forEach(s => s.classList.remove('active'));
-        screens[name].classList.add('active');
+    // ─── Main Menu ───────────────────────────────────────────
+    function onGameMathClick() {
+        showScreen('config');
     }
 
-    // ─── Configuration Screen ────────────────────────────────
+    function onGameFlagsClick() {
+        showScreen('flagsConfig');
+    }
+
+    // ─── Math Configuration Screen ──────────────────────────
     function getSelectedTopics() {
         const topics = [];
         for (const [topic, checkbox] of Object.entries(configUI.checkboxes)) {
@@ -338,7 +407,7 @@
         return topics;
     }
 
-    function onStartClick() {
+    function onMathStartClick() {
         const selected = getSelectedTopics();
         if (selected.length === 0) {
             configUI.errorMsg.classList.remove('hidden');
@@ -346,104 +415,105 @@
         }
         configUI.errorMsg.classList.add('hidden');
 
-        // Build questions
-        questions = buildStageQuestions(selected);
-        currentIndex = 0;
-        firstAttemptCorrect = 0;
+        mathQuestions = buildMathStageQuestions(selected);
+        mathCurrentIndex = 0;
+        mathFirstAttemptCorrect = 0;
 
         showScreen('question');
-        presentQuestion();
+        presentMathQuestion();
     }
 
-    // ─── Question Screen ─────────────────────────────────────
-    function presentQuestion() {
-        const q = questions[currentIndex];
-        isFirstAttempt = true;
+    // ─── Math Question Screen ────────────────────────────────
+    function presentMathQuestion() {
+        const q = mathQuestions[mathCurrentIndex];
+        mathIsFirstAttempt = true;
 
-        // Update progress
-        const num = currentIndex + 1;
+        const num = mathCurrentIndex + 1;
         questionUI.progressText.textContent = t('progress', { n: num, total: QUESTIONS_PER_STAGE });
         questionUI.progressBar.style.width = `${(num / QUESTIONS_PER_STAGE) * 100}%`;
 
-        // Display question
+        // Display question (always LTR since it's a math equation)
         questionUI.questionText.textContent = q.display;
+        questionUI.questionText.dir = 'ltr';
 
-        // Hide feedback
         questionUI.feedbackEmoji.classList.add('hidden');
         questionUI.feedbackEmoji.textContent = '';
 
-        // Build option buttons
         const container = questionUI.optionsContainer;
         container.innerHTML = '';
         q.options.forEach((val, idx) => {
             const btn = document.createElement('button');
-            btn.className = 'btn-option';
+            btn.className = 'btn-option btn-option-number';
             btn.textContent = val;
             btn.dataset.index = idx;
-            btn.addEventListener('click', () => onOptionClick(btn, idx));
+            btn.addEventListener('click', () => onMathOptionClick(btn, idx));
             container.appendChild(btn);
         });
     }
 
-    function onOptionClick(btn, idx) {
-        const q = questions[currentIndex];
+    function onMathOptionClick(btn, idx) {
+        const q = mathQuestions[mathCurrentIndex];
         const allBtns = questionUI.optionsContainer.querySelectorAll('.btn-option');
 
         if (idx === q.correctIndex) {
-            // ✅ Correct
             btn.classList.add('correct');
             questionUI.feedbackEmoji.textContent = '😊';
             questionUI.feedbackEmoji.classList.remove('hidden');
 
-            if (isFirstAttempt) firstAttemptCorrect++;
+            if (mathIsFirstAttempt) mathFirstAttemptCorrect++;
 
-            // Disable all buttons
             allBtns.forEach(b => b.disabled = true);
 
-            // Advance after delay
             setTimeout(() => {
-                currentIndex++;
-                if (currentIndex >= QUESTIONS_PER_STAGE) {
-                    showSummary();
+                mathCurrentIndex++;
+                if (mathCurrentIndex >= QUESTIONS_PER_STAGE) {
+                    showMathSummary();
                 } else {
-                    presentQuestion();
+                    presentMathQuestion();
                 }
             }, FEEDBACK_DELAY_MS);
         } else {
-            // ❌ Incorrect
-            isFirstAttempt = false;
+            mathIsFirstAttempt = false;
             btn.classList.add('wrong');
             btn.disabled = true;
             questionUI.feedbackEmoji.textContent = '😢';
             questionUI.feedbackEmoji.classList.remove('hidden');
 
-            // Hide sad emoji after a moment so player can try again
             setTimeout(() => {
                 questionUI.feedbackEmoji.classList.add('hidden');
             }, 900);
         }
     }
 
-    // ─── Summary Screen ──────────────────────────────────────
-    function showSummary() {
-        summaryUI.score.textContent = t('summaryScore', { score: firstAttemptCorrect, total: QUESTIONS_PER_STAGE });
+    // ─── Math Summary Screen ─────────────────────────────────
+    function showMathSummary() {
+        summaryUI.score.textContent = t('summaryScore', { score: mathFirstAttemptCorrect, total: QUESTIONS_PER_STAGE });
         showScreen('summary');
     }
 
-    function onPlayAgainClick() {
+    function onMathPlayAgainClick() {
         showScreen('config');
     }
 
     // ─── Event Binding ───────────────────────────────────────
-    configUI.btnStart.addEventListener('click', onStartClick);
-    summaryUI.btnPlayAgain.addEventListener('click', onPlayAgainClick);
 
-    // Hide error message when any checkbox changes
+    // Main menu
+    menuUI.btnMath.addEventListener('click', onGameMathClick);
+    menuUI.btnFlags.addEventListener('click', onGameFlagsClick);
+
+    // Math config
+    configUI.btnStart.addEventListener('click', onMathStartClick);
+    configUI.btnBack.addEventListener('click', () => showScreen('menu'));
+
     Object.values(configUI.checkboxes).forEach(cb => {
         cb.addEventListener('change', () => {
             configUI.errorMsg.classList.add('hidden');
         });
     });
+
+    // Math summary
+    summaryUI.btnPlayAgain.addEventListener('click', onMathPlayAgainClick);
+    summaryUI.btnMenu.addEventListener('click', () => showScreen('menu'));
 
     // Language toggle
     langUI.btnEn.addEventListener('click', function (e) {
