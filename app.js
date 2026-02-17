@@ -446,8 +446,14 @@
     });
 
     // Language toggle
-    langUI.btnEn.addEventListener('click', () => switchLanguage('en'));
-    langUI.btnHe.addEventListener('click', () => switchLanguage('he'));
+    langUI.btnEn.addEventListener('click', function (e) {
+        e.preventDefault();
+        switchLanguage('en');
+    });
+    langUI.btnHe.addEventListener('click', function (e) {
+        e.preventDefault();
+        switchLanguage('he');
+    });
 
     // Apply saved language on load
     applyLanguage();
