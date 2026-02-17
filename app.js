@@ -9,7 +9,42 @@
     const QUESTIONS_PER_STAGE = 10;
     const HISTORY_CAP = 200;
     const HISTORY_KEY = 'mathStudy_questionHistory';
+    const LANG_KEY = 'mathStudy_lang';
     const FEEDBACK_DELAY_MS = 1500;
+
+    // ─── Translations ────────────────────────────────────────
+    const translations = {
+        en: {
+            title: '🧮 Math Study',
+            subtitle: "Pick your topics and let's practice!",
+            addition: '➕ Addition',
+            subtraction: '➖ Subtraction',
+            multiplication: '✖️ Multiplication',
+            division: '➗ Division',
+            start: 'Start! 🚀',
+            configError: 'Please select at least one topic.',
+            progress: 'Question {n} / {total}',
+            stageComplete: '🎉 Stage Complete!',
+            summaryScore: '{score} / {total} on first try!',
+            playAgain: 'Play Again 🔄',
+        },
+        he: {
+            title: '🧮 תרגול חשבון',
+            subtitle: 'בחרו נושאים ובואו נתרגל!',
+            addition: '➕ חיבור',
+            subtraction: '➖ חיסור',
+            multiplication: '✖️ כפל',
+            division: '➗ חילוק',
+            start: '🚀 !התחילו',
+            configError: 'יש לבחור לפחות נושא אחד.',
+            progress: 'שאלה {n} מתוך {total}',
+            stageComplete: '🎉 !השלב הושלם',
+            summaryScore: '{score} מתוך {total} בניסיון הראשון!',
+            playAgain: '🔄 שחקו שוב',
+        },
+    };
+
+    let currentLang = localStorage.getItem(LANG_KEY) || 'en';
 
     // ─── DOM References ──────────────────────────────────────
     const screens = {
@@ -47,6 +82,64 @@
         score:       document.getElementById('summary-score'),
         btnPlayAgain: document.getElementById('btn-play-again'),
     };
+
+    const langUI = {
+        btnEn: document.getElementById('btn-lang-en'),
+        btnHe: document.getElementById('btn-lang-he'),
+    };
+
+    // ─── i18n Helpers ────────────────────────────────────────
+    function t(key, replacements) {
+        let text = translations[currentLang][key] || translations.en[key] || key;
+        if (replacements) {
+            for (const [k, v] of Object.entries(replacements)) {
+                text = text.replace(`{${k}}`, v);
+            }
+        }
+        return text;
+    }
+
+    function applyLanguage() {
+        // Set direction
+        if (currentLang === 'he') {
+            document.body.classList.add('rtl');
+            document.documentElement.lang = 'he';
+        } else {
+            document.body.classList.remove('rtl');
+            document.documentElement.lang = 'en';
+        }
+
+        // Toggle active class on flag buttons
+        langUI.btnEn.classList.toggle('active', currentLang === 'en');
+        langUI.btnHe.classList.toggle('active', currentLang === 'he');
+
+        // Translate all static elements with data-i18n
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            // Skip dynamic keys that need parameters
+            if (key === 'progress' || key === 'summaryScore') return;
+            el.textContent = t(key);
+        });
+
+        // Update dynamic text if currently on question screen
+        if (screens.question.classList.contains('active') && questions.length > 0) {
+            const num = currentIndex + 1;
+            questionUI.progressText.textContent = t('progress', { n: num, total: QUESTIONS_PER_STAGE });
+        }
+
+        // Update summary score if currently on summary screen
+        if (screens.summary.classList.contains('active')) {
+            summaryUI.score.textContent = t('summaryScore', { score: firstAttemptCorrect, total: QUESTIONS_PER_STAGE });
+        }
+
+        // Persist preference
+        localStorage.setItem(LANG_KEY, currentLang);
+    }
+
+    function switchLanguage(lang) {
+        currentLang = lang;
+        applyLanguage();
+    }
 
     // ─── State ───────────────────────────────────────────────
     let questions = [];          // array of 10 question objects for current stage
@@ -269,7 +362,7 @@
 
         // Update progress
         const num = currentIndex + 1;
-        questionUI.progressText.textContent = `Question ${num} / ${QUESTIONS_PER_STAGE}`;
+        questionUI.progressText.textContent = t('progress', { n: num, total: QUESTIONS_PER_STAGE });
         questionUI.progressBar.style.width = `${(num / QUESTIONS_PER_STAGE) * 100}%`;
 
         // Display question
@@ -333,7 +426,7 @@
 
     // ─── Summary Screen ──────────────────────────────────────
     function showSummary() {
-        summaryUI.score.textContent = `${firstAttemptCorrect} / ${QUESTIONS_PER_STAGE} on first try!`;
+        summaryUI.score.textContent = t('summaryScore', { score: firstAttemptCorrect, total: QUESTIONS_PER_STAGE });
         showScreen('summary');
     }
 
@@ -351,5 +444,12 @@
             configUI.errorMsg.classList.add('hidden');
         });
     });
+
+    // Language toggle
+    langUI.btnEn.addEventListener('click', () => switchLanguage('en'));
+    langUI.btnHe.addEventListener('click', () => switchLanguage('he'));
+
+    // Apply saved language on load
+    applyLanguage();
 
 })();
