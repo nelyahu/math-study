@@ -10,6 +10,7 @@
     const MATH_HISTORY_CAP = 200;
     const MATH_HISTORY_KEY = 'mathStudy_questionHistory';
     const LANG_KEY = 'mathStudy_lang';
+    const NIKUD_KEY = 'mathStudy_nikud';
     const FEEDBACK_DELAY_MS = 1500;
 
     // ─── Translations ────────────────────────────────────────
@@ -87,6 +88,7 @@
     };
 
     let currentLang = localStorage.getItem(LANG_KEY) || 'en';
+    let nikudEnabled = localStorage.getItem(NIKUD_KEY) === 'true';
 
     // ─── DOM References ──────────────────────────────────────
     const screens = {
@@ -139,11 +141,13 @@
     const langUI = {
         btnEn: document.getElementById('btn-lang-en'),
         btnHe: document.getElementById('btn-lang-he'),
+        btnNikud: document.getElementById('btn-nikud'),
     };
 
     // ─── Expose shared utilities for flags.js ────────────────
     window.KidsStudy = {
         get currentLang() { return currentLang; },
+        get nikudEnabled() { return nikudEnabled; },
         QUESTIONS_PER_STAGE,
         FEEDBACK_DELAY_MS,
         t: null,           // set below
@@ -178,6 +182,10 @@
         // Toggle active class on flag buttons
         langUI.btnEn.classList.toggle('active', currentLang === 'en');
         langUI.btnHe.classList.toggle('active', currentLang === 'he');
+
+        // Show/hide nikud toggle (only visible in Hebrew)
+        langUI.btnNikud.classList.toggle('hidden', currentLang !== 'he');
+        langUI.btnNikud.classList.toggle('active', nikudEnabled);
 
         // Translate all static elements with data-i18n
         document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -523,6 +531,18 @@
     langUI.btnHe.addEventListener('click', function (e) {
         e.preventDefault();
         switchLanguage('he');
+    });
+
+    // Nikud toggle
+    langUI.btnNikud.addEventListener('click', function (e) {
+        e.preventDefault();
+        nikudEnabled = !nikudEnabled;
+        localStorage.setItem(NIKUD_KEY, nikudEnabled);
+        langUI.btnNikud.classList.toggle('active', nikudEnabled);
+        // Notify flags module
+        if (typeof window.FlagsGame !== 'undefined' && window.FlagsGame.onLanguageChange) {
+            window.FlagsGame.onLanguageChange();
+        }
     });
 
     // Apply saved language on load

@@ -12,78 +12,78 @@
     const FLAGS_HISTORY_CAP = 100;
 
     // ─── Country Data (55 countries) ─────────────────────────
-    // Each entry: [ISO alpha-2, English name, Hebrew name, region]
-    // Flags are loaded as SVG images from flagcdn.com
+    // Each entry: [ISO alpha-2, English name, Hebrew name, Hebrew name with nikud, region]
+    // Flags are loaded as PNG images from flagcdn.com
     const COUNTRIES = [
         // Europe (15)
-        ['FR', 'France', 'צרפת', 'europe'],
-        ['DE', 'Germany', 'גרמניה', 'europe'],
-        ['IT', 'Italy', 'איטליה', 'europe'],
-        ['ES', 'Spain', 'ספרד', 'europe'],
-        ['GB', 'United Kingdom', 'בריטניה', 'europe'],
-        ['NL', 'Netherlands', 'הולנד', 'europe'],
-        ['SE', 'Sweden', 'שוודיה', 'europe'],
-        ['NO', 'Norway', 'נורווגיה', 'europe'],
-        ['PL', 'Poland', 'פולין', 'europe'],
-        ['PT', 'Portugal', 'פורטוגל', 'europe'],
-        ['GR', 'Greece', 'יוון', 'europe'],
-        ['CH', 'Switzerland', 'שווייץ', 'europe'],
-        ['AT', 'Austria', 'אוסטריה', 'europe'],
-        ['BE', 'Belgium', 'בלגיה', 'europe'],
-        ['DK', 'Denmark', 'דנמרק', 'europe'],
+        ['FR', 'France', 'צרפת', 'צָרְפַת', 'europe'],
+        ['DE', 'Germany', 'גרמניה', 'גֶּרְמַנְיָה', 'europe'],
+        ['IT', 'Italy', 'איטליה', 'אִיטַלְיָה', 'europe'],
+        ['ES', 'Spain', 'ספרד', 'סְפָרַד', 'europe'],
+        ['GB', 'United Kingdom', 'בריטניה', 'בְּרִיטַנְיָה', 'europe'],
+        ['NL', 'Netherlands', 'הולנד', 'הוֹלַנְד', 'europe'],
+        ['SE', 'Sweden', 'שוודיה', 'שְׁוֶדְיָה', 'europe'],
+        ['NO', 'Norway', 'נורווגיה', 'נוֹרְוֶגְיָה', 'europe'],
+        ['PL', 'Poland', 'פולין', 'פּוֹלִין', 'europe'],
+        ['PT', 'Portugal', 'פורטוגל', 'פּוֹרְטוּגָל', 'europe'],
+        ['GR', 'Greece', 'יוון', 'יָוָן', 'europe'],
+        ['CH', 'Switzerland', 'שווייץ', 'שְׁוַיְץ', 'europe'],
+        ['AT', 'Austria', 'אוסטריה', 'אוֹסְטְרִיָּה', 'europe'],
+        ['BE', 'Belgium', 'בלגיה', 'בֶּלְגְיָה', 'europe'],
+        ['DK', 'Denmark', 'דנמרק', 'דֶּנְמָרְק', 'europe'],
 
         // Asia (13)
-        ['JP', 'Japan', 'יפן', 'asia'],
-        ['CN', 'China', 'סין', 'asia'],
-        ['KR', 'South Korea', 'דרום קוריאה', 'asia'],
-        ['IN', 'India', 'הודו', 'asia'],
-        ['TH', 'Thailand', 'תאילנד', 'asia'],
-        ['IL', 'Israel', 'ישראל', 'asia'],
-        ['TR', 'Turkey', 'טורקיה', 'asia'],
-        ['SA', 'Saudi Arabia', 'ערב הסעודית', 'asia'],
-        ['AE', 'United Arab Emirates', 'איחוד האמירויות', 'asia'],
-        ['VN', 'Vietnam', 'וייטנאם', 'asia'],
-        ['ID', 'Indonesia', 'אינדונזיה', 'asia'],
-        ['PH', 'Philippines', 'פיליפינים', 'asia'],
-        ['MY', 'Malaysia', 'מלזיה', 'asia'],
+        ['JP', 'Japan', 'יפן', 'יָפָן', 'asia'],
+        ['CN', 'China', 'סין', 'סִין', 'asia'],
+        ['KR', 'South Korea', 'דרום קוריאה', 'דְּרוֹם קוֹרֵיאָה', 'asia'],
+        ['IN', 'India', 'הודו', 'הוֹדּוּ', 'asia'],
+        ['TH', 'Thailand', 'תאילנד', 'תַּאיְלַנְד', 'asia'],
+        ['IL', 'Israel', 'ישראל', 'יִשְׂרָאֵל', 'asia'],
+        ['TR', 'Turkey', 'טורקיה', 'טוּרְקִיָּה', 'asia'],
+        ['SA', 'Saudi Arabia', 'ערב הסעודית', 'עֲרָב הַסְּעוּדִית', 'asia'],
+        ['AE', 'United Arab Emirates', 'איחוד האמירויות', 'אִיחוּד הָאֶמִירוּיּוֹת', 'asia'],
+        ['VN', 'Vietnam', 'וייטנאם', 'וְיֶטְנָאם', 'asia'],
+        ['ID', 'Indonesia', 'אינדונזיה', 'אִינְדּוֹנֶזְיָה', 'asia'],
+        ['PH', 'Philippines', 'פיליפינים', 'פִילִיפִּינִים', 'asia'],
+        ['MY', 'Malaysia', 'מלזיה', 'מָלֶזְיָה', 'asia'],
 
         // Americas (12)
-        ['US', 'United States', 'ארצות הברית', 'americas'],
-        ['CA', 'Canada', 'קנדה', 'americas'],
-        ['MX', 'Mexico', 'מקסיקו', 'americas'],
-        ['BR', 'Brazil', 'ברזיל', 'americas'],
-        ['AR', 'Argentina', 'ארגנטינה', 'americas'],
-        ['CL', 'Chile', 'צ\'ילה', 'americas'],
-        ['CO', 'Colombia', 'קולומביה', 'americas'],
-        ['PE', 'Peru', 'פרו', 'americas'],
-        ['CU', 'Cuba', 'קובה', 'americas'],
-        ['JM', 'Jamaica', 'ג\'מייקה', 'americas'],
-        ['PA', 'Panama', 'פנמה', 'americas'],
-        ['CR', 'Costa Rica', 'קוסטה ריקה', 'americas'],
+        ['US', 'United States', 'ארצות הברית', 'אַרְצוֹת הַבְּרִית', 'americas'],
+        ['CA', 'Canada', 'קנדה', 'קָנָדָה', 'americas'],
+        ['MX', 'Mexico', 'מקסיקו', 'מֶקְסִיקוֹ', 'americas'],
+        ['BR', 'Brazil', 'ברזיל', 'בְּרָזִיל', 'americas'],
+        ['AR', 'Argentina', 'ארגנטינה', 'אַרְגֶּנְטִינָה', 'americas'],
+        ['CL', 'Chile', 'צ\'ילה', 'צ\'ִילֶה', 'americas'],
+        ['CO', 'Colombia', 'קולומביה', 'קוֹלוֹמְבִּיָה', 'americas'],
+        ['PE', 'Peru', 'פרו', 'פֵּרוּ', 'americas'],
+        ['CU', 'Cuba', 'קובה', 'קוּבָּה', 'americas'],
+        ['JM', 'Jamaica', 'ג\'מייקה', 'גָ\'מַיְיקָה', 'americas'],
+        ['PA', 'Panama', 'פנמה', 'פָּנָמָה', 'americas'],
+        ['CR', 'Costa Rica', 'קוסטה ריקה', 'קוֹסְטָה רִיקָה', 'americas'],
 
         // Africa (10)
-        ['EG', 'Egypt', 'מצרים', 'africa'],
-        ['ZA', 'South Africa', 'דרום אפריקה', 'africa'],
-        ['NG', 'Nigeria', 'ניגריה', 'africa'],
-        ['KE', 'Kenya', 'קניה', 'africa'],
-        ['MA', 'Morocco', 'מרוקו', 'africa'],
-        ['ET', 'Ethiopia', 'אתיופיה', 'africa'],
-        ['GH', 'Ghana', 'גאנה', 'africa'],
-        ['TZ', 'Tanzania', 'טנזניה', 'africa'],
-        ['TN', 'Tunisia', 'תוניסיה', 'africa'],
-        ['SN', 'Senegal', 'סנגל', 'africa'],
+        ['EG', 'Egypt', 'מצרים', 'מִצְרַיִם', 'africa'],
+        ['ZA', 'South Africa', 'דרום אפריקה', 'דְּרוֹם אַפְרִיקָה', 'africa'],
+        ['NG', 'Nigeria', 'ניגריה', 'נִיגֶרְיָה', 'africa'],
+        ['KE', 'Kenya', 'קניה', 'קֶנְיָה', 'africa'],
+        ['MA', 'Morocco', 'מרוקו', 'מָרוֹקוֹ', 'africa'],
+        ['ET', 'Ethiopia', 'אתיופיה', 'אֶתְיוֹפְּיָה', 'africa'],
+        ['GH', 'Ghana', 'גאנה', 'גָ\'אנָה', 'africa'],
+        ['TZ', 'Tanzania', 'טנזניה', 'טַנְזַנְיָה', 'africa'],
+        ['TN', 'Tunisia', 'תוניסיה', 'תּוּנִיסְיָה', 'africa'],
+        ['SN', 'Senegal', 'סנגל', 'סֶנֶגָל', 'africa'],
 
         // Oceania (5)
-        ['AU', 'Australia', 'אוסטרליה', 'oceania'],
-        ['NZ', 'New Zealand', 'ניו זילנד', 'oceania'],
-        ['FJ', 'Fiji', 'פיג\'י', 'oceania'],
-        ['PG', 'Papua New Guinea', 'פפואה גינאה החדשה', 'oceania'],
-        ['WS', 'Samoa', 'סמואה', 'oceania'],
+        ['AU', 'Australia', 'אוסטרליה', 'אוֹסְטְרַלְיָה', 'oceania'],
+        ['NZ', 'New Zealand', 'ניו זילנד', 'נְיוּ זִילַנְד', 'oceania'],
+        ['FJ', 'Fiji', 'פיג\'י', 'פִיגִ\'י', 'oceania'],
+        ['PG', 'Papua New Guinea', 'פפואה גינאה החדשה', 'פָּפּוּאָה גִינֵאָה הַחֲדָשָׁה', 'oceania'],
+        ['WS', 'Samoa', 'סמואה', 'סָמוֹאָה', 'oceania'],
     ];
 
     // Parse into objects
-    const countries = COUNTRIES.map(([code, nameEn, nameHe, region]) => ({
-        code, nameEn, nameHe, region,
+    const countries = COUNTRIES.map(([code, nameEn, nameHe, nameHeNikud, region]) => ({
+        code, nameEn, nameHe, nameHeNikud, region,
     }));
 
     /** Build flag image URL from country code */
@@ -145,7 +145,10 @@
 
     // ─── Helpers ─────────────────────────────────────────────
     function getCountryName(country) {
-        return app.currentLang === 'he' ? country.nameHe : country.nameEn;
+        if (app.currentLang === 'he') {
+            return app.nikudEnabled ? country.nameHeNikud : country.nameHe;
+        }
+        return country.nameEn;
     }
 
     function getCountriesByRegions(regions) {

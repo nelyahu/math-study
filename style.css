@@ -42,6 +42,40 @@ body.rtl .progress-bar {
     z-index: 1000;
 }
 
+/* ===== NIKUD TOGGLE ===== */
+.nikud-btn {
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-size: 1rem;
+}
+
+.nikud-btn:hover {
+    background: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.nikud-btn.active {
+    border-color: #764ba2;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(118,75,162,0.35);
+}
+
+.nikud-label {
+    font-weight: 700;
+    color: #4a3f8a;
+    pointer-events: none;
+    line-height: 1;
+}
+
 .lang-btn {
     background: rgba(255, 255, 255, 0.85);
     border: 2px solid transparent;

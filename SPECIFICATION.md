@@ -33,7 +33,8 @@ The app opens to a **main menu** where the player selects which game to play.
 | **Direction** | `ltr` for English, `rtl` for Hebrew |
 | **Math / numbers** | Always rendered LTR (`direction: ltr; unicode-bidi: isolate`) regardless of language |
 | **Country names** | Displayed in the currently selected language |
-| **Persistence** | Selected language is saved to `localStorage` and restored on reload |
+| **Nikud (vowel marks)** | Optional toggle (אָ button) visible only when Hebrew is active. When enabled, Hebrew country names display with full vowel pointing (ניקוד) to aid early readers. Preference is saved to `localStorage`. |
+| **Persistence** | Selected language and nikud preference saved to `localStorage` and restored on reload |
 
 ### 2.3 Shared UX Patterns
 
