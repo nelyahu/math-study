@@ -478,6 +478,32 @@ body.rtl .progress-bar {
     margin-bottom: 28px;
 }
 
+/* ===== WORLD MAP ===== */
+.world-map-container {
+    margin-top: 20px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    animation: mapSlideIn 0.5s ease;
+}
+
+.world-map-container svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+@keyframes mapSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 500px) {
     .screen {
